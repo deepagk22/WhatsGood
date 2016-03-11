@@ -1,0 +1,82 @@
+<html>
+<head>
+	<script src="https://code.jquery.com/jquery-2.1.3.min.js"></script>
+
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+
+
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
+ 
+  <link rel="stylesheet" type="text/css" href="/static/css/events.css">
+
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+
+	<title>My Goods</title>
+</head>
+<body>
+
+<div id='container'>
+	<div id = 'head'>
+     <img src="/static/wuzgood.png" height="300px" width='424px'>
+  	</div>
+
+<nav id='navbar'class="navbar navbar-inverse">
+    <div class="container-fluid">
+     
+      <div>
+        <ul class="nav navbar-nav">
+          <li class="active"><a href="/">Home</a></li>
+          <li><a href="#">What's REALLY Good</a></li> 
+          <li><a href="/events">My Goods</a></li> 
+        </ul>
+        <ul class="nav navbar-nav navbar-right">
+
+         
+        
+          <li> <div class="panel-group">
+              <button><a href ='/logout' >Logout</a></button>
+          </div>
+          </li>
+        </ul> 
+      </div>
+    </div>
+  </nav>
+  <div id='body'>
+	<h1>My Goods</h1>
+	<div id= 'table' >
+	<table class="table table-hover">
+	<thead>
+	  <tr>
+	    <th>Event</th>
+	    <th>Date</th>
+	    <th>Time</th>
+	    <th>Place</th>
+	  </tr>
+	</thead>
+	<tbody>
+		{%for x in events%}
+	  <tr>
+		<form action='/sendsms' method='post'>
+			<input type="hidden" name="event_name" value="{{x['event_name']}}">
+			<input type="hidden" name="date" value="{{x['date']}}">
+			<input type="hidden" name="time" value="{{x['time']}}">
+			<input type="hidden" name="place" value="{{x['place']}}">
+			<td>{{x['event_name']}}</td>
+			<td>{{x['date']}}</td>
+			<td>{{x['time']}}</td>
+			<td>{{x['place']}} </td>
+			<td><input type="submit" class="btn btn-default" value="Send Reminder"></td>
+		</form>
+	  </tr>
+	  	{%endfor%}
+	</tbody>
+	</table>
+	</div>
+	<div id= 'footer'>
+    <p>© 2015 WhatsGood, Inc.&nbsp; &nbsp; &nbsp; <a href="#">Terms</a> &nbsp; &nbsp; &nbsp;<a href="#">Privacy</a> &nbsp; &nbsp; &nbsp;<a href="#">Security</a>&nbsp; &nbsp; &nbsp; <a href="#">Contact</a> &nbsp; &nbsp; &nbsp;<a href="#">Help</a> </p>
+	</div>
+</div>
+</div>
+
+</body>
+</html>

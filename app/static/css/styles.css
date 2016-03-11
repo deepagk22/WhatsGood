@@ -1,0 +1,57 @@
+.msg{
+  color: red;
+}
+#collapse3{
+  height: 460px;
+  width: auto;
+}
+
+#container {
+    width: 1000px;
+    margin: auto ;
+  }
+#googlemap {
+    width: 745px;
+    height: 500px;
+    opacity: 0.92;
+    z-index: 1;
+  }  
+#head {
+  height: 175px;
+  padding-left: 300px;
+  padding-bottom: 240px;
+  }
+#body {
+  background-image: url("/static/wuzgood.png");
+  height: 700px;
+  background-size: 800px 600px;
+  background-repeat: no-repeat;
+}
+#body h1 {
+  padding-left: 20px;
+}
+
+#footer{
+ margin-top: 50px;
+ padding-left: 15px;
+
+}
+
+#filter{
+  overflow: scroll;
+  height: 20px;
+  opacity: 0.92;
+}
+#right {
+  position: absolute;
+  padding-left: 620px;
+  z-index: 10;
+ 
+}
+#navbar{
+  opacity: .9;
+  z-index: 5
+}
+h3{
+  padding-left: 20px;
+}

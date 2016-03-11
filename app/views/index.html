@@ -1,0 +1,228 @@
+<html>
+
+<head>
+
+<script src="https://code.jquery.com/jquery-2.1.3.min.js"></script>
+
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
+
+<link rel="stylesheet" type="text/css" href="/static/css/styles.css">
+
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+
+<script src="https://maps.googleapis.com/maps/api/js"></script>
+
+<script>
+var googlemap;
+function start(){
+  var mapCanvas = document.getElementById("googlemap");
+  var mapOptions = {
+    center: new google.maps.LatLng(37.33333,-121.90271),
+    zoom: 12,
+    mapTypeId: google.maps.MapTypeId.ROADMAP
+  }
+    googlemap= new google.maps.Map(mapCanvas, mapOptions)
+}
+
+function initization(urlinput){
+  $.get(urlinput, function(result){
+    count=0;
+    res=JSON.parse(result.res);
+
+    for (var i=0;i<res.events.event.length;i++){
+      keyvalue=res.events.event[i];
+      tempstr="";
+      tempstr="<div><form id='"+i+"' action='/create_event' method='post'><div><a href='"+keyvalue.url+"' target='_blank'><input name='event_name' type='hidden' value='"+keyvalue.title.toString()+"'>"+keyvalue.title.toString()+"</a></div><div>Date: <input name='start_time' hidden='label' value='"+keyvalue.start_time+"'>"+keyvalue.start_time+"</div><div>venue:<input name='venue_name' type='hidden' value='"+ keyvalue.venue_name+"'>"+keyvalue.venue_name+"</div><div><input id='goodsubmit' type='submit' value='Interested'></a></div></form></div>";
+      contentString.push(tempstr);
+      myLatLng ={'lat':parseFloat(keyvalue.latitude),'lng':parseFloat(keyvalue.longitude)};
+
+      marker = new google.maps.Marker({
+        position: myLatLng,map: googlemap,
+        title: keyvalue.title
+      });
+
+      var infowindow = new google.maps.InfoWindow(), marker,i;
+      google.maps.event.addListener(marker, 'click', (function(marker, i) {
+        return function() {
+          infowindow.setContent(contentString[i]);
+          infowindow.open(googlemap, marker);
+        }
+      })(marker, i));
+
+      if (count++ ==10) break;
+    }
+  },"json");
+  return false;
+}
+
+var contentString=[];
+
+$(document).ready(function(){
+  start();
+  initization('/showgeocode');
+
+  $('input[type="checkbox"]').click(function(){
+    console.log($(this));
+    console.log($(this)[0].id);
+    var allchecked='';
+    if ($(this)[0].checked)
+    allchecked+='&category='+$(this)[0].id;
+
+    var urlcat='/getcategorygeocode/'+allchecked;
+    console.log(urlcat);
+    start();
+    initization('/getcategorygeocode/'+allchecked);
+  });
+
+
+});
+
+</script>
+
+<title>Whats Good</title>
+</head>
+<body>
+<div id='container'>
+  <div id = 'head'>
+     <img src="/static/wuzgood.png" height="300px" width='424px'>
+  </div>
+<div id = 'body'>
+  <nav id= 'navbar' class="navbar navbar-inverse">
+    <div class="container-fluid">
+      
+
+        <ul class="nav navbar-nav">
+          <li class="active"><a href="/">Home</a></li>
+          <li><a href="#">What's REALLY Good</a></li> 
+          {% if 'number'in session %}
+          <li><a href="/events">My Goods</a></li> 
+          {%else%}
+          {%endif%}
+        </ul>
+
+        {% if 'number'in session %}
+
+
+       <ul class="nav navbar-nav navbar-right">
+
+        
+          <li> <div class="panel-group">
+              <button><a href ='/logout' >Logout</a></button>
+          </div>
+          </li>
+        </ul> 
+      {%else%}
+        <div id= 'right'class="nav navbar-nav navbar-right" >
+          <li><div class="panel-group">
+                <div class="panel panel-default">
+                  <div class="panel-heading">
+                    <h5 class="panel-title">
+                    <a data-toggle="collapse" class="glyphicon glyphicon-user" href="#collapse1">Sign Up</a>
+                    </h5>
+                  </div>
+                  <div id="collapse1" class="panel-collapse collapse">
+                    <form class="form-inline" action='/create_user' method='post'>
+                    <div class="form-group">
+                      <label for="name">Name:</label><br>
+                      <input type="name" class="form-control" id="name" name="name">
+                    </div><br>                  
+                    <div class="form-group">
+                      <label for="number">Phone Number:</label><br>
+                      <input type="text" class="form-control" id="number"  name="number">
+                    </div><br>
+                    <div class="form-group">
+                      <label for="pwd">Password:</label><br>
+                      <input type="password" class="form-control" id="pwd" name="pwd">
+                    </div><br> 
+                    <div class="form-group">
+                      <label for="pwd">Confirm Password:</label><br>
+                      <input type="password" class="form-control" id="cpwd" name="cpwd">
+                    </div><br>                      
+                    <input type="submit" class="btn btn-default" value="YEEE">
+                    {% with messages = get_flashed_messages() %}
+                      {% if messages %}
+                        {% for message in messages %}
+                          <div class='msg'>{{ message }}<div>
+                        {% endfor %}
+                      {% endif %}
+                    {% endwith %}
+                  </form>
+                  </div>
+                </div>
+              </div>
+          </li>
+          <li>  <div class="panel-group">
+            <div class="panel panel-default">
+              <div class="panel-heading">
+                <h5 class="panel-title">
+                <a data-toggle="collapse" class="glyphicon glyphicon-log-in" href="#collapse2">Login</a>
+                </h5>
+              </div>
+                <div id="collapse2" class="panel-collapse collapse">
+                  <form class="form-inline" action='/login' method='POST'>
+                    <div class="form-group">
+                      <label for="number">Phone Number:</label><br>
+                      <input type="text" class="form-control" id="number" name='number'>
+                    </div><br>
+                    <div class="form-group">
+                      <label for="pwd">Password:</label><br>
+                      <input type="password" class="form-control" id="pwd"name='pwd'>
+                    </div><br>
+                      
+                    <button type="submit" class="btn btn-default">YEEE</button>
+                    {% with messages = get_flashed_messages() %}
+                      {% if messages %}
+                        {% for message in messages %}
+                          <div class='msg'>{{ message }}<div>
+                        {% endfor %}
+                      {% endif %}
+                    {% endwith %}
+                  </form>
+                </div>
+            </div>
+          </div>
+          </li>
+        </div> 
+        {%endif%}
+    </div>
+  </nav>
+
+  {% if 'number'in session %}
+  <h3>WHAT'S GOOD {{session['name']}}</h3>
+  {%else%}
+  {%endif%}
+
+
+  <div id='fitler' class='col-md-3'>
+    <div class="panel-group">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h4 class="panel-title">
+          <a data-toggle="collapse" href="#collapse3">Filter</a>
+          </h4>
+        </div>
+        <div id="collapse3" class="panel-collapse collapse" style='overflow:auto'>
+          <ul class="list-group">
+            {%for category in categories%}
+            <li class="checkbox">
+            <label><input type="checkbox" id="{{category['id']}}"> {{category['name']}}</label>
+
+            </li>
+            {%endfor%}
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<div id="googlemap">
+</div>
+  <div id= 'footer'>
+    <p>© 2015 WhatsGood, Inc.&nbsp; &nbsp; &nbsp; <a href="#">Terms</a> &nbsp; &nbsp; &nbsp;<a href="#">Privacy</a> &nbsp; &nbsp; &nbsp;<a href="#">Security</a>&nbsp; &nbsp; &nbsp; <a href="#">Contact</a> &nbsp; &nbsp; &nbsp;<a href="#">Help</a> </p>
+  </div>
+</div>
+</div>
+</body>
+</html>
